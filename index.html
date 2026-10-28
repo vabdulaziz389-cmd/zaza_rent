@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>zaza_rent</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#fff;color:#1a1a1a;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding-bottom:80px}
+header{padding:14px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:5}
+header h1{margin:0;font-size:20px}
+header small{color:#777}
+.wrap{max-width:720px;margin:0 auto;padding:12px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;padding:13px 2px;border:0;background:none;font-size:12px;color:#777;font-weight:600}
+nav button.on{color:#0a7cff;border-top:3px solid #0a7cff}
+.card{border:1px solid #e6e6e6;border-radius:14px;padding:14px;margin-bottom:12px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.card.red{border:2px solid #e53935;background:#fff1f0}
+.card.vip{border:2px solid #f5b400;background:#fffbea}
+label{display:block;font-size:13px;color:#666;margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1px solid #d5d5d5;border-radius:10px;font-size:16px;background:#fff}
+.tar{display:flex;gap:10px}
+.tar div{flex:1;padding:12px;border:2px solid #ddd;border-radius:12px;text-align:center;font-weight:700;cursor:pointer}
+.tar div.on{border-color:#0a7cff;background:#eaf3ff;color:#0a7cff}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;color:#fff;background:#0a7cff;margin-top:12px}
+.btn.green{background:#1fa855}.btn.red{background:#e53935}.btn.gray{background:#eee;color:#333}.btn.gold{background:#f5b400;color:#222}
+.btn.sm{display:inline-block;width:auto;padding:9px 14px;font-size:14px;margin:6px 6px 0 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.big{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.price{font-size:22px;font-weight:800;color:#1fa855}
+.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;background:#eaf3ff;color:#0a7cff}
+.tag.r{background:#e53935;color:#fff}.tag.o{background:#fff3d6;color:#b36b00}.tag.v{background:#f5b400;color:#222}.tag.g{background:#e3f7ea;color:#1fa855}
+a.tel{color:#0a7cff;font-weight:700;text-decoration:none;font-size:17px}
+.muted{color:#777;font-size:13px}
+.debt-item{border-top:1px dashed #ddd;padding:8px 0;font-size:14px}
+.debt-item.od{color:#c62828;font-weight:600}
+.debt-item.paid{color:#888}
+#modalBg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-end;justify-content:center}
+#modal{background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px;max-height:92vh;overflow:auto}
+.stat{display:flex;gap:8px}.stat .card{flex:1;text-align:center;margin-bottom:12px;padding:10px 6px}
+.stat b{font-size:17px;display:block}
+.hide{display:none}
+h3{margin:6px 0 10px}
+.chk{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:16px;font-weight:600}
+.chk input{width:22px;height:22px}
+.hrs{background:#fff3d6;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:14px}
+/* chart */
+.chart{display:flex;align-items:flex-end;gap:6px;height:170px;padding-top:20px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar i{display:block;width:100%;background:#9cc8ff;border-radius:6px 6px 0 0;min-height:2px}
+.bar.best i{background:#1fa855}
+.bar.today i{outline:2px solid #0a7cff}
+.bar span{font-size:11px;font-weight:700;margin-bottom:3px;white-space:nowrap}
+.bar small{font-size:11px;color:#666;margin-top:4px;text-align:center}
+.seg{display:flex;gap:6px;margin-bottom:8px}
+.seg button{flex:1;padding:9px 4px;border:1px solid #ddd;background:#fff;border-radius:10px;font-weight:700;font-size:13px}
+.seg button.on{background:#0a7cff;color:#fff;border-color:#0a7cff}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:7px 4px;border-bottom:1px solid #eee;text-align:right}
+td:first-child,th:first-child{text-align:left}
+details{border:1px solid #e6e6e6;border-radius:12px;margin-bottom:10px;padding:10px 12px;background:#fff}
+summary{font-weight:700;cursor:pointer}
+.ent{border-top:1px dashed #ddd;padding:8px 0;font-size:14px}
+</style>
+</head>
+<body>
+<header><h1>🚗 zaza_rent</h1><small id="today"></small></header>
+<div class="wrap">
+
+<!-- IJARA -->
+<section id="p-rent">
+  <div class="stat">
+    <div class="card"><span class="muted">Bugungi daromad</span><b id="stIncome">0</b></div>
+    <div class="card"><span class="muted">Bugun qarz qildi</span><b id="stDebtors" style="color:#e53935">0 kishi</b></div>
+    <div class="card"><span class="muted">Jami qarz</span><b id="stDebt" style="color:#e53935">0</b></div>
+  </div>
+  <div id="activeList"></div>
+  <div class="card">
+    <h3>Yangi ijara</h3>
+    <div class="tar" id="tarBox">
+      <div data-r="150000" class="on">150 000<br><small>1 soat</small></div>
+      <div data-r="200000">200 000<br><small>1 soat</small></div>
+    </div>
+    <label>Ismi</label>
+    <input id="rName" list="peopleList" placeholder="Ism familiya" autocomplete="off">
+    <datalist id="peopleList"></datalist>
+    <label>Maktabi</label>
+    <input id="rSchool" placeholder="Qaysi maktabda o'qiydi">
+    <label>Telefon raqami</label>
+    <input id="rPhone" type="tel" placeholder="+998 90 123 45 67">
+    <label class="chk"><input type="checkbox" id="rVip"> ⭐ VIP mijoz</label>
+    <button class="btn green" id="startBtn">▶ Mashinani berish (hisobni boshlash)</button>
+  </div>
+</section>
+
+<!-- QARZLAR -->
+<section id="p-debt" class="hide">
+  <button class="btn" id="addDebtBtn">+ Qarz yozish</button>
+  <div style="height:12px"></div>
+  <div id="debtList"></div>
+</section>
+
+<!-- STATISTIKA -->
+<section id="p-stat" class="hide">
+  <div id="statBox"></div>
+</section>
+
+<!-- MA'LUMOTLAR -->
+<section id="p-data" class="hide">
+  <div id="dataBox"></div>
+</section>
+</div>
+
+<nav>
+  <button class="on" data-p="rent">🚗<br>Ijara</button>
+  <button data-p="debt">📒<br>Qarzlar</button>
+  <button data-p="stat">📊<br>Statistika</button>
+  <button data-p="data">🗂<br>Ma'lumotlar</button>
+</nav>
+
+<div id="modalBg"><div id="modal"></div></div>
+
+<script>
+const KEY='zaza_rent_v1';
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||{people:[],rentals:[],debts:[],log:[],trash:[]};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const todayStr=()=>ymd(new Date());
+const addDays=(s,n)=>{const [y,m,d]=s.split('-').map(Number);return ymd(new Date(y,m-1,d+n))};
+/* eski ma'lumotni yangi tuzilmaga o'tkazish */
+if(!db.log){
+  db.log=[];
+  (db.history||[]).forEach(h=>db.log.push({...h,status:h.type==='rent'?'paid':undefined}));
+  db.debts.forEach(d=>{if(d.min)db.log.push({id:uid(),type:'rent',pid:d.pid,rate:d.rate,min:d.min,amount:d.amount,date:d.date,ts:Date.parse(d.date+'T12:00:00'),status:'debt',m:1})});
+  delete db.history;
+}
+if(!db.trash)db.trash=[];
+let selRate=150000, metric='cnt';
+const DUE_DAYS=3;
+const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
+const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ');
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dFmt=s=>{const [y,m,d]=s.split('-');return d+'.'+m+'.'+y};
+const cost=(rate,sec)=>Math.round(Math.ceil(sec/60)*rate/60/100)*100;
+const costMin=(rate,min)=>Math.round(min*rate/60/100)*100;
+const hms=s=>[Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(v=>String(v).padStart(2,'0')).join(':');
+const person=id=>db.people.find(p=>p.id===id);
+const digits=s=>(s||'').replace(/\D/g,'');
+const hm=min=>Math.floor(min/60)+' soat '+(min%60)+' daq';
+const WD=['Yak','Dush','Sesh','Chor','Pay','Jum','Shan'];
+const wdOf=s=>{const [y,m,d]=s.split('-').map(Number);return WD[new Date(y,m-1,d).getDay()]};
+
+function getPerson(name,school,phone){
+  name=name.trim();
+  let p=db.people.find(p=>(digits(phone)&&digits(p.phone)===digits(phone))||p.name.toLowerCase()===name.toLowerCase());
+  if(p){ if(school)p.school=school; if(phone)p.phone=phone; }
+  else{ p={id:uid(),name,school,phone,vip:false}; db.people.push(p); }
+  return p;
+}
+const remain=d=>d.amount-(d.paid||0);
+const personDebt=id=>db.debts.filter(d=>d.pid===id).reduce((s,d)=>s+remain(d),0);
+const isVip=pid=>!!(person(pid)&&person(pid).vip);
+const isOver=d=>!isVip(d.pid)&&remain(d)>0&&d.due<todayStr();
+const rents=()=>db.log.filter(l=>l.type==='rent');
+const totalMin=pid=>rents().filter(h=>h.pid===pid).reduce((s,h)=>s+(h.min||0),0);
+const pname=pid=>(person(pid)||{name:'?'}).name;
+
+function toggleVip(pid){const p=person(pid);if(!p)return;p.vip=!p.vip;save();renderAll()}
+
+/* ---------- navigation ---------- */
+const PAGES=['rent','debt','stat','data'];
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  PAGES.forEach(p=>$('p-'+p).classList.toggle('hide',p!==b.dataset.p));
+  renderAll();window.scrollTo(0,0);
+});
+document.querySelectorAll('#tarBox div').forEach(d=>d.onclick=()=>{
+  document.querySelectorAll('#tarBox div').forEach(x=>x.classList.toggle('on',x===d));
+  selRate=+d.dataset.r;
+});
+
+/* ---------- modal ---------- */
+function openModal(html){$('modal').innerHTML=html;$('modalBg').style.display='flex'}
+function closeModal(){$('modalBg').style.display='none'}
+$('modalBg').onclick=e=>{if(e.target.id==='modalBg')closeModal()};
+
+/* ---------- autofill ---------- */
+function fillFrom(nameEl,schoolEl,phoneEl,vipEl){
+  const p=db.people.find(p=>p.name.toLowerCase()===nameEl.value.trim().toLowerCase());
+  if(p){schoolEl.value=p.school||'';phoneEl.value=p.phone||'';if(vipEl)vipEl.checked=!!p.vip}
+}
+$('rName').addEventListener('input',()=>fillFrom($('rName'),$('rSchool'),$('rPhone'),$('rVip')));
+
+/* ---------- start rental ---------- */
+$('startBtn').onclick=()=>{
+  const name=$('rName').value.trim();
+  if(!name)return alert('Ismini kiriting');
+  const p=getPerson(name,$('rSchool').value.trim(),$('rPhone').value.trim());
+  p.vip=$('rVip').checked;
+  db.rentals.push({id:uid(),pid:p.id,rate:selRate,start:Date.now()});
+  save();
+  $('rName').value=$('rSchool').value=$('rPhone').value='';
+  $('rVip').checked=false;
+  renderAll();
+};
+
+/* ---------- render active ---------- */
+function renderActive(){
+  $('activeList').innerHTML=db.rentals.map(r=>{
+    const p=person(r.pid)||{};
+    const d=personDebt(r.pid);
+    const vip=!!p.vip;
+    const tm=totalMin(r.pid);
+    return `<div class="card ${vip?'vip':''}" style="${vip?'':'border:2px solid #1fa855'}">
+      <div class="row"><b style="font-size:18px">${vip?'⭐ ':''}${esc(p.name)}</b><span class="tag">${fmt(r.rate)}/soat</span></div>
+      <div class="muted">🏫 ${esc(p.school||'—')}</div>
+      <div style="margin:6px 0">${p.phone?`<a class="tel" href="tel:${esc(p.phone.replace(/[^\d+]/g,''))}">📞 ${esc(p.phone)}</a>`:'<span class="muted">Raqam yo\'q</span>'}</div>
+      ${vip?`<div class="hrs">⭐ VIP • Hozir: <b id="h-${r.id}">0 soat 0 daq</b><br>Avval jami haydagan: <b>${hm(tm)}</b> (${(tm/60).toFixed(1)} soat)</div>`:''}
+      ${(d>0&&!vip)?`<div class="tag r">Oldingi qarzi: ${fmt(d)}</div>`:''}
+      ${(d>0&&vip)?`<div class="tag o">Oldingi qarzi: ${fmt(d)}</div>`:''}
+      <div class="big" id="t-${r.id}">00:00:00</div>
+      <div class="price" id="c-${r.id}">0 so'm</div>
+      <div class="muted">1.5 soat narxi: <b>${fmt(r.rate*1.5)}</b> so'm</div>
+      <div id="b-${r.id}" class="tag o hide" style="margin-top:6px"></div>
+      <button class="btn red" onclick="finish('${r.id}')">■ Tugatish / Hisoblash</button>
+      <button class="btn gold sm" onclick="toggleVip('${p.id}')">${vip?'⭐ VIP ni olib tashlash':'☆ VIP qilish'}</button>
+      <button class="btn gray sm" onclick="cancelRental('${r.id}')">✖ Bekor qilish</button>
+    </div>`;
+  }).join('');
+  tick();
+}
+function tick(){
+  db.rentals.forEach(r=>{
+    const sec=Math.floor((Date.now()-r.start)/1000);
+    const t=$('t-'+r.id); if(!t)return;
+    t.textContent=hms(sec);
+    $('c-'+r.id).textContent=fmt(cost(r.rate,sec))+" so'm";
+    const vip=isVip(r.pid);
+    const h=$('h-'+r.id);
+    if(h)h.textContent=hm(Math.floor(sec/60))+' ('+(sec/3600).toFixed(2)+' soat)';
+    const b=$('b-'+r.id);
+    if(sec>=5400&&!vip){
+      b.classList.remove('hide');
+      b.textContent='⏰ 1.5 soat o\'tdi — hozirgi hisob: '+fmt(cost(r.rate,sec))+' so\'m';
+    }else b.classList.add('hide');
+  });
+}
+setInterval(tick,1000);
+
+function cancelRental(id){
+  const r=db.rentals.find(x=>x.id===id);if(!r)return;
+  if(!confirm('Bu ijarani bekor qilasizmi? Ma\'lumotlar bo\'limida saqlanadi.'))return;
+  db.trash.push({id:uid(),kind:'rental',data:r,at:Date.now()});
+  db.rentals=db.rentals.filter(x=>x.id!==id);
+  save();renderAll();
+}
+
+/* ---------- finish ---------- */
+function finish(id){
+  const r=db.rentals.find(x=>x.id===id); if(!r)return;
+  const sec=Math.floor((Date.now()-r.start)/1000);
+  const min=Math.max(1,Math.ceil(sec/60));
+  const amount=costMin(r.rate,min);
+  const p=person(r.pid);
+  openModal(`<h3>${p.vip?'⭐ ':''}${esc(p.name)} — hisob</h3>
+    <div class="muted">${esc(p.school||'')} • ${esc(p.phone||'')}</div>
+    <div style="margin:12px 0"><span class="muted">Haydadi:</span> <b>${hm(min)}</b> (${min} daq)<br>
+    <span class="muted">Tarif:</span> <b>${fmt(r.rate)}/soat</b></div>
+    <div class="price" style="font-size:30px">${fmt(amount)} so'm</div>
+    <button class="btn green" id="mPaid">✅ To'landi</button>
+    <label>Qarzga yozsangiz — qaytarish sanasi</label>
+    <input type="date" id="mDue" value="${addDays(todayStr(),DUE_DAYS)}">
+    <button class="btn red" id="mDebt">📒 Qarzga yozish</button>
+    <button class="btn gray" onclick="closeModal()">Bekor qilish</button>`);
+  const done=()=>{db.rentals=db.rentals.filter(x=>x.id!==id)};
+  $('mPaid').onclick=()=>{
+    db.log.push({id:uid(),type:'rent',status:'paid',pid:p.id,rate:r.rate,min,amount,date:todayStr(),ts:Date.now()});
+    done();save();closeModal();renderAll();
+  };
+  $('mDebt').onclick=()=>{
+    db.debts.push({id:uid(),pid:p.id,rate:r.rate,min,amount,paid:0,date:todayStr(),due:$('mDue').value||addDays(todayStr(),DUE_DAYS)});
+    db.log.push({id:uid(),type:'rent',status:'debt',pid:p.id,rate:r.rate,min,amount,date:todayStr(),ts:Date.now()});
+    done();save();closeModal();renderAll();
+  };
+}
+
+/* ---------- add debt manually ---------- */
+$('addDebtBtn').onclick=()=>openDebtModal();
+function openDebtModal(pid){
+  const p=pid?person(pid):null;
+  openModal(`<h3>Qarz yozish</h3>
+    <label>Ismi</label><input id="dName" list="peopleList" value="${esc(p?.name||'')}" placeholder="Ism">
+    <label>Maktabi</label><input id="dSchool" value="${esc(p?.school||'')}">
+    <label>Telefon</label><input id="dPhone" type="tel" value="${esc(p?.phone||'')}">
+    <label class="chk"><input type="checkbox" id="dVip" ${p?.vip?'checked':''}> ⭐ VIP mijoz</label>
+    <label>Tarif</label>
+    <select id="dRate"><option value="150000">150 000 / soat</option><option value="200000">200 000 / soat</option></select>
+    <label>Necha daqiqa haydadi</label><input id="dMin" type="number" inputmode="numeric" placeholder="masalan 90">
+    <label>Summa (so'm) — avtomatik, o'zgartirsa bo'ladi</label><input id="dAmt" type="number" inputmode="numeric">
+    <label>Olgan sanasi</label><input id="dDate" type="date" value="${todayStr()}">
+    <label>Qaytarish muddati</label><input id="dDue" type="date" value="${addDays(todayStr(),DUE_DAYS)}">
+    <button class="btn" id="dSave">Saqlash</button>
+    <button class="btn gray" onclick="closeModal()">Bekor qilish</button>`);
+  const calc=()=>{const m=+$('dMin').value||0;$('dAmt').value=m?costMin(+$('dRate').value,m):''};
+  $('dMin').oninput=calc;$('dRate').onchange=calc;
+  $('dName').addEventListener('input',()=>fillFrom($('dName'),$('dSchool'),$('dPhone'),$('dVip')));
+  $('dSave').onclick=()=>{
+    const name=$('dName').value.trim(),amt=+$('dAmt').value;
+    if(!name||!amt)return alert('Ism va summani kiriting');
+    const pp=getPerson(name,$('dSchool').value.trim(),$('dPhone').value.trim());
+    pp.vip=$('dVip').checked;
+    const date=$('dDate').value||todayStr(), min=+$('dMin').value||0, rate=+$('dRate').value;
+    db.debts.push({id:uid(),pid:pp.id,rate,min,amount:amt,paid:0,date,due:$('dDue').value});
+    db.log.push({id:uid(),type:'rent',status:'debt',pid:pp.id,rate,min,amount:amt,date,ts:Date.now()});
+    save();closeModal();renderAll();
+  };
+}
+
+/* ---------- payment ---------- */
+function openPay(pid){
+  const p=person(pid),total=personDebt(pid);
+  openModal(`<h3>${esc(p.name)} — to'lov</h3>
+    <div>Jami qarz: <b style="color:#e53935">${fmt(total)} so'm</b></div>
+    <label>Qancha to'ladi (so'm)</label>
+    <input id="pAmt" type="number" inputmode="numeric" placeholder="masalan 250000">
+    <button class="btn green" id="pOk">To'lovni qabul qilish</button>
+    <button class="btn gray" onclick="closeModal()">Bekor qilish</button>`);
+  $('pOk').onclick=()=>{
+    let a=Math.min(+$('pAmt').value||0,total); if(a<=0)return;
+    const paidTotal=a;
+    db.debts.filter(d=>d.pid===pid&&remain(d)>0).sort((x,y)=>x.date.localeCompare(y.date)).forEach(d=>{
+      if(a<=0)return; const t=Math.min(a,remain(d)); d.paid=(d.paid||0)+t; a-=t;
+    });
+    db.log.push({id:uid(),type:'pay',pid,amount:paidTotal,date:todayStr(),ts:Date.now()});
+    save();closeModal();renderAll();
+  };
+}
+
+/* ---------- delete debt (ma'lumotlarga saqlanadi) ---------- */
+function delDebt(id){
+  const d=db.debts.find(x=>x.id===id);if(!d)return;
+  if(!confirm('Bu qarzni o\'chirasizmi? Ma\'lumotlar bo\'limida saqlanib qoladi.'))return;
+  db.trash.push({id:uid(),kind:'debt',data:d,at:Date.now()});
+  db.debts=db.debts.filter(x=>x.id!==id);
+  save();renderAll();
+}
+function delRent(id){
+  const l=db.log.find(x=>x.id===id);if(!l)return;
+  if(!confirm('Bu yozuvni o\'chirasizmi? Pastdagi "O\'chirilganlar"da saqlanadi.'))return;
+  db.trash.push({id:uid(),kind:'rent',data:l,at:Date.now()});
+  db.log=db.log.filter(x=>x.id!==id);
+  save();renderAll();
+}
+function restore(id){
+  const t=db.trash.find(x=>x.id===id);if(!t)return;
+  if(t.kind==='debt')db.debts.push(t.data);
+  else if(t.kind==='rent')db.log.push(t.data);
+  else if(t.kind==='rental')db.rentals.push(t.data);
+  db.trash=db.trash.filter(x=>x.id!==id);
+  save();renderAll();
+}
+
+/* ---------- debts list ---------- */
+function renderDebts(){
+  const list=db.people.map(p=>{
+    const ds=db.debts.filter(d=>d.pid===p.id).sort((a,b)=>a.date.localeCompare(b.date));
+    return {p,ds,total:ds.reduce((s,d)=>s+remain(d),0),over:ds.some(isOver)};
+  }).filter(x=>x.ds.length).sort((a,b)=>(b.over-a.over)||(b.total-a.total));
+  $('debtList').innerHTML=list.length?list.map(x=>{
+    const tm=totalMin(x.p.id);
+    return `
+    <div class="card ${x.over?'red':(x.p.vip?'vip':'')}">
+      <div class="row"><b style="font-size:18px">${x.p.vip?'⭐ ':''}${esc(x.p.name)}</b>
+        ${x.over?'<span class="tag r">MUDDATI O\'TGAN</span>':''}${x.p.vip?'<span class="tag v">VIP</span>':''}${x.total<=0?'<span class="tag g">Qarz yo\'q</span>':''}</div>
+      <div class="muted">🏫 ${esc(x.p.school||'—')}</div>
+      <div>${x.p.phone?`<a class="tel" href="tel:${esc(x.p.phone.replace(/[^\d+]/g,''))}">📞 ${esc(x.p.phone)}</a>`:''}</div>
+      ${x.p.vip?`<div class="hrs">⭐ Jami haydagan: <b>${hm(tm)}</b> (${(tm/60).toFixed(1)} soat)</div>`:''}
+      <div class="price" style="color:${x.total>0?'#e53935':'#1fa855'}">Jami qarz: ${fmt(x.total)} so'm</div>
+      ${x.ds.map(d=>`<div class="debt-item ${isOver(d)?'od':''} ${remain(d)<=0?'paid':''}">
+        📅 Olgan: ${dFmt(d.date)} • Muddat: ${dFmt(d.due)}<br>
+        🚗 ${d.min?hm(d.min):''} • ${fmt(d.rate)}/soat • Summa: ${fmt(d.amount)}${d.paid?` • To'langan: ${fmt(d.paid)}`:''}<br>
+        <b>${remain(d)>0?'Qoldi: '+fmt(remain(d))+' so\'m':'✅ To\'langan'}</b>
+        <button class="btn gray sm" style="margin:0 0 0 8px;padding:5px 10px" onclick="delDebt('${d.id}')">🗑</button></div>`).join('')}
+      <button class="btn green sm" onclick="openPay('${x.p.id}')">💵 To'lov</button>
+      <button class="btn sm" onclick="openDebtModal('${x.p.id}')">+ Yana qarz</button>
+      <button class="btn gold sm" onclick="toggleVip('${x.p.id}')">${x.p.vip?'⭐ VIP olib tashlash':'☆ VIP qilish'}</button>
+    </div>`}).join(''):'<div class="card muted">Qarzlar yo\'q 🎉</div>';
+}
+
+/* ---------- statistika ---------- */
+function setMetric(m){metric=m;renderStat()}
+function renderStat(){
+  const t=todayStr();
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const date=addDays(t,-i);
+    const rs=rents().filter(r=>r.date===date);
+    days.push({date,cnt:rs.length,min:rs.reduce((s,r)=>s+(r.min||0),0),sum:rs.reduce((s,r)=>s+r.amount,0)});
+  }
+  const W={cnt:days.reduce((s,d)=>s+d.cnt,0),min:days.reduce((s,d)=>s+d.min,0),sum:days.reduce((s,d)=>s+d.sum,0)};
+  let best=null;
+  days.forEach(d=>{if(d.cnt>0&&(!best||d.cnt>best.cnt||(d.cnt===best.cnt&&d.min>best.min)))best=d});
+  const today=days[6];
+  const debtorsToday=new Set(db.debts.filter(d=>d.date===t).map(d=>d.pid));
+  const val=d=>metric==='cnt'?d.cnt:metric==='min'?d.min/60:d.sum;
+  const lab=d=>metric==='cnt'?d.cnt+' ta':metric==='min'?(d.min/60).toFixed(1)+' s':fmt(d.sum/1000)+'k';
+  const max=Math.max(...days.map(val),0.0001);
+  $('statBox').innerHTML=`
+    <div class="card">
+      <h3>📅 Bugun (${dFmt(t)})</h3>
+      <div class="row"><span>Berilgan arenda:</span><b>${today.cnt} ta</b></div>
+      <div class="row"><span>Jami haydagan vaqt:</span><b>${hm(today.min)}</b></div>
+      <div class="row"><span>Jami summa:</span><b>${fmt(today.sum)} so'm</b></div>
+      <div class="row"><span>Bugun qarz qilganlar:</span><b style="color:#e53935">${debtorsToday.size} kishi ${debtorsToday.size?'('+[...debtorsToday].map(pname).map(esc).join(', ')+')':''}</b></div>
+    </div>
+    <div class="card">
+      <h3>📈 7 kunlik grafik</h3>
+      <div class="seg">
+        <button class="${metric==='cnt'?'on':''}" onclick="setMetric('cnt')">Arenda soni</button>
+        <button class="${metric==='min'?'on':''}" onclick="setMetric('min')">Soat</button>
+        <button class="${metric==='sum'?'on':''}" onclick="setMetric('sum')">Summa</button>
+      </div>
+      <div class="chart">${days.map(d=>`
+        <div class="bar ${best&&best.date===d.date?'best':''} ${d.date===t?'today':''}">
+          <span>${lab(d)}</span><i style="height:${Math.max(val(d)/max*100,1)}%"></i>
+          <small>${wdOf(d.date)}<br>${d.date.slice(8)}.${d.date.slice(5,7)}</small>
+        </div>`).join('')}</div>
+      <div class="muted" style="margin-top:6px">🟩 yashil — eng ko'p arenda bo'lgan kun • ko'k ramka — bugun</div>
+    </div>
+    <div class="card">
+      <h3>🗓 1 haftalik jami</h3>
+      <div class="row"><span>Arendalar soni:</span><b>${W.cnt} ta</b></div>
+      <div class="row"><span>Jami soat:</span><b>${hm(W.min)}</b></div>
+      <div class="row"><span>Jami summa:</span><b class="price" style="font-size:20px">${fmt(W.sum)} so'm</b></div>
+      <div class="row"><span>Eng ko'p arenda kuni:</span><b>${best?wdOf(best.date)+' ('+dFmt(best.date)+') — '+best.cnt+' ta':'—'}</b></div>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th>Kun</th><th>Soni</th><th>Soat</th><th>Summa</th></tr>
+        ${days.slice().reverse().map(d=>`<tr><td>${wdOf(d.date)} ${dFmt(d.date).slice(0,5)}</td><td>${d.cnt}</td><td>${(d.min/60).toFixed(1)}</td><td>${fmt(d.sum)}</td></tr>`).join('')}
+      </table>
+    </div>`;
+}
+
+/* ---------- ma'lumotlar (kunlar bo'yicha arxiv) ---------- */
+function renderData(){
+  const byDate={};
+  db.log.forEach(l=>{(byDate[l.date]=byDate[l.date]||[]).push(l)});
+  const dates=Object.keys(byDate).sort().reverse();
+  const open=$('dataBox').querySelectorAll('details[open]');
+  const openSet=new Set([...open].map(x=>x.dataset.d));
+  $('dataBox').innerHTML=`
+    <button class="btn gray" onclick="backup()">⬇ Zaxira nusxasini yuklab olish</button>
+    <div style="height:12px"></div>
+    ${dates.length?dates.map(d=>{
+      const es=byDate[d].sort((a,b)=>(b.ts||0)-(a.ts||0));
+      const rs=es.filter(e=>e.type==='rent');
+      const min=rs.reduce((s,e)=>s+(e.min||0),0), sum=rs.reduce((s,e)=>s+e.amount,0);
+      const debtors=new Set(rs.filter(e=>e.status==='debt').map(e=>e.pid)).size;
+      return `<details data-d="${d}" ${openSet.has(d)||d===todayStr()&&!openSet.size?'open':''}>
+        <summary>${wdOf(d)} ${dFmt(d)} • ${rs.length} arenda • ${hm(min)} • ${fmt(sum)}${debtors?` • 📒${debtors} qarz`:''}</summary>
+        ${es.map(e=>{
+          const time=(e.ts&&!e.m)?new Date(e.ts).toTimeString().slice(0,5)+' • ':'';
+          const p=person(e.pid)||{};
+          return e.type==='rent'?`<div class="ent">${time}<b>${esc(pname(e.pid))}</b> ${p.school?'<span class="muted">('+esc(p.school)+')</span>':''}<br>
+            🚗 ${hm(e.min||0)} • ${fmt(e.rate)}/soat • <b>${fmt(e.amount)} so'm</b>
+            <span class="tag ${e.status==='debt'?'r':'g'}">${e.status==='debt'?'Qarzga':'To\'langan'}</span>
+            <button class="btn gray sm" style="margin:0 0 0 6px;padding:4px 9px" onclick="delRent('${e.id}')">🗑</button></div>`
+          :`<div class="ent">${time}<b>${esc(pname(e.pid))}</b> qarzdan to'ladi: <b>${fmt(e.amount)} so'm</b> <span class="tag o">Qarz to'lovi</span></div>`;
+        }).join('')}
+      </details>`}).join(''):'<div class="card muted">Hozircha ma\'lumot yo\'q</div>'}
+    <h3 style="margin-top:18px">🗑 O'chirilganlar</h3>
+    ${db.trash.length?db.trash.slice().reverse().map(t=>{
+      const d=t.data, at=new Date(t.at);
+      const what=t.kind==='debt'?'Qarz':t.kind==='rent'?'Ijara yozuvi':'Bekor qilingan ijara';
+      return `<div class="card"><div class="row"><b>${esc(pname(d.pid))}</b><span class="tag o">${what}</span></div>
+        <div class="muted">${d.date?'Sana: '+dFmt(d.date)+' • ':''}${d.min?hm(d.min)+' • ':''}${d.amount?fmt(d.amount)+' so\'m':''}</div>
+        <div class="muted">O'chirilgan: ${dFmt(ymd(at))} ${at.toTimeString().slice(0,5)}</div>
+        <button class="btn green sm" onclick="restore('${t.id}')">↩ Qaytarish</button></div>`}).join('')
+      :'<div class="card muted">Bo\'sh</div>'}`;
+}
+function backup(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,1)],{type:'application/json'}));
+  a.download='zaza_rent_'+todayStr()+'.json';a.click();
+}
+
+function renderAll(){
+  const t=todayStr();
+  $('today').textContent=dFmt(t);
+  $('peopleList').innerHTML=db.people.map(p=>`<option value="${esc(p.name)}">`).join('');
+  $('stIncome').textContent=fmt(db.log.filter(l=>l.date===t&&((l.type==='rent'&&l.status==='paid')||l.type==='pay')).reduce((s,l)=>s+l.amount,0));
+  $('stDebtors').textContent=new Set(db.debts.filter(d=>d.date===t).map(d=>d.pid)).size+' kishi';
+  $('stDebt').textContent=fmt(db.debts.reduce((s,d)=>s+remain(d),0));
+  renderActive();renderDebts();renderStat();renderData();
+}
+save();renderAll();
+</script>
+</body>
+</html>
